@@ -1,58 +1,12 @@
 # CamJam EduKit 3 - Robotics
 
-import RPi.GPIO as GPIO # Import the GPIO Library
 import time # Import the Time library
+from gpiozero import Robot, LED
 
-# Set the GPIO modes
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
+# Set up a robot on pins 7, 8, 9, 10
+bot = Robot(left=(7, 8), right=(9, 10))
 
-# Set variables for the GPIO motor pins
-pinMotorAForwards = 10
-pinMotorABackwards = 9
-pinMotorBForwards = 8
-pinMotorBBackwards = 7
-
-# Set the GPIO Pin mode
-GPIO.setup(pinMotorAForwards, GPIO.OUT)
-GPIO.setup(pinMotorABackwards, GPIO.OUT)
-GPIO.setup(pinMotorBForwards, GPIO.OUT)
-GPIO.setup(pinMotorBBackwards, GPIO.OUT)
-
-# Turn all motors off
-def StopMotors():
-    GPIO.output(pinMotorAForwards, 0)
-    GPIO.output(pinMotorABackwards, 0)
-    GPIO.output(pinMotorBForwards, 0)
-    GPIO.output(pinMotorBBackwards, 0)
-
-# Turn both motors forwards
-def Forwards():
-    GPIO.output(pinMotorAForwards, 1)
-    GPIO.output(pinMotorABackwards, 0)
-    GPIO.output(pinMotorBForwards, 1)
-    GPIO.output(pinMotorBBackwards, 0)
-
-# Turn both motors backwards
-def Backwards():
-    GPIO.output(pinMotorAForwards, 0)
-    GPIO.output(pinMotorABackwards, 1)
-    GPIO.output(pinMotorBForwards, 0)
-    GPIO.output(pinMotorBBackwards, 1)
-
-def Left():
-    GPIO.output(pinMotorAForwards, 1)
-    GPIO.output(pinMotorABackwards, 0)
-    GPIO.output(pinMotorBForwards, 0)
-    GPIO.output(pinMotorBBackwards, 1)
-
-def Right():
-    GPIO.output(pinMotorAForwards, 0)
-    GPIO.output(pinMotorABackwards, 1)
-    GPIO.output(pinMotorBForwards, 1)
-    GPIO.output(pinMotorBBackwards, 0)
-
-StopMotors()
+bot.stop()
 import sys, termios, tty, os
 
 def getch():
@@ -67,41 +21,40 @@ def getch():
     return ch
 
 PIN_LED = 25
-GPIO.setup(PIN_LED, GPIO.OUT)
-GPIO.output(PIN_LED, 0)
+myled = LED(PIN_LED)
 button_delay = 0.2
 
 for x in range(0,3):
-    GPIO.output(PIN_LED, 1)
+    myled.on()
     time.sleep(0.25)
-    GPIO.output(PIN_LED, 0)
+    myled.off()
     time.sleep(0.25)
 
 while True:
     char = getch()
 
     if (char == "q"):
-        StopMotors()
+        bot.stop()
         exit(0)  
 
     if (char == "a"):
-        print 'Left pressed'
-        Left()
+        print('Left pressed')
+        bot.left()
         time.sleep(button_delay)
 
     if (char == "d"):
-        print 'Right pressed'
-        Right()
+        print('Right pressed')
+        bot.right()
         time.sleep(button_delay)          
 
     elif (char == "w"):
-        print 'Up pressed' 
-        Forwards()       
+        print('Up pressed')
+        bot.forward()
         time.sleep(button_delay)          
     
     elif (char == "s"):
-        print 'Down pressed'      
-        Backwards()
+        print('Down pressed')    
+        bot.backward()
         time.sleep(button_delay)  
     
-    StopMotors()
+    bot.stop()
